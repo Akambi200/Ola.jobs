@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ola Job's - Plateforme de Services Locaux</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-item {
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-item.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .section {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, h2 {
+            margin-bottom: 1.5rem;
+            color: #333;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        form {
+            max-width: 500px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        input, textarea, select, button {
+            padding: 1rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .success-msg {
+            color: #22c55e;
+            text-align: center;
+            font-weight: bold;
+            padding: 1rem;
+            background: rgba(34, 197, 94, 0.1);
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .error-msg {
+            color: #ef4444;
+            text-align: center;
+            font-weight: bold;
+            padding: 1rem;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .service-item {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+            transition: transform 0.3s ease;
+        }
+
+        .service-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .service-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .budget {
+            font-weight: bold;
+            color: #22c55e;
+        }
+
+        .user-status {
+            position: fixed;
+            top: 100px;
+            right: 2rem;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            z-index: 999;
+        }
+
+        .welcome-text {
+            text-align: center;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .forum-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .forum-card {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border-left: 4px solid #667eea;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .forum-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .forum-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .forum-stats {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .discussion-area {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e1e5e9;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .message {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 3px solid #667eea;
+        }
+
+        .message-author {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .message-date {
+            font-size: 0.8rem;
+            color: #888;
+            float: right;
+        }
+
+        .back-btn {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 0.5rem 1rem;
+            margin-bottom: 1rem;
+            width: auto;
+        }
+
+        .back-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                justify-content: center;
+                gap: 0.5rem;
+            }
+            
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .section {
+                padding: 2rem 1rem;
+            }
+            
+            .user-status {
+                position: static;
+                margin: 1rem 0;
+            }
+
+            .forum-container {
+                grid-template-columns: 1fr;
+            }
+
+            .service-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-icon">O</div>
+                <span>Ola Job's</span>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item" onclick="showSection('home')">Plateforme</li>
+                    <li class="nav-item" onclick="showSection('register')">Créer un compte</li>
+                    <li class="nav-item" onclick="showSection('login')">Connexion</li>
+                    <li class="nav-item" id="create-nav" onclick="showSection('create')">Créer Offre</li>
+                    <li class="nav-item" id="list-nav" onclick="showSection('list')">Liste des Services</li>
+                    <li class="nav-item" id="community-nav" onclick="showSection('community')">Communauté</li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div id="user-status" class="user-status hidden">
+        <div id="user-welcome"></div>
+    </div>
+
+    <main>
+        <section id="home" class="section active">
+            <h1>Bienvenue sur Ola Job's</h1>
+            <p class="welcome-text">La plateforme des services locaux et de l'entraide communautaire au Bénin. Connectez-vous avec votre voisinage pour échanger des services, partager vos compétences et construire une communauté solidaire.</p>
+            <div style="text-align: center; margin-top: 2rem;">
+                <button onclick="showSection('register')" style="margin-right: 1rem;">Commencer maintenant</button>
+                <button onclick="checkAuthAndShow('list')" style="background: transparent; color: #667eea; border: 2px solid #667eea;">Voir les services</button>
+            </div>
+        </section>
+
+        <section id="register" class="section">
+            <h2>Créer un compte</h2>
+            <form id="register-form">
+                <input type="text" placeholder="Nom d'utilisateur" id="reg-username" required>
+                <input type="email" placeholder="Email" id="reg-email" required>
+                <input type="password" placeholder="Mot de passe" id="reg-password" required>
+                <input type="text" placeholder="Ville" id="reg-city" required>
+                <button type="submit">S'inscrire</button>
+                <p id="register-success" class="hidden success-msg">Inscription réussie ! Vous pouvez maintenant vous connecter.</p>
+            </form>
+        </section>
+
+        <section id="login" class="section">
+            <h2>Connexion</h2>
+            <form id="login-form">
+                <input type="text" placeholder="Nom d'utilisateur ou Email" id="login-user" required>
+                <input type="password" placeholder="Mot de passe" id="login-pass" required>
+                <button type="submit">Se connecter</button>
+                <p id="login-success" class="hidden success-msg">Connexion réussie ! Bienvenue sur Ola Job's.</p>
+                <p id="login-error" class="hidden error-msg">Identifiants incorrects</p>
+            </form>
+        </section>
+
+        <section id="create" class="section">
+            <h2>Créer une offre de service</h2>
+            <form id="service-form">
+                <input type="text" id="title" placeholder="Titre du service" required>
+                <textarea id="description" placeholder="Description détaillée" required></textarea>
+                <select id="category" onchange="handleCategoryChange()" required>
+                    <option value="">Catégorie</option>
+                    <option value="menage">Ménage</option>
+                    <option value="jardinage">Jardinage</option>
+                    <option value="bricolage">Bricolage</option>
+                    <option value="informatique">Informatique</option>
+                    <option value="cours">Cours particuliers</option>
+                    <option value="transport">Transport</option>
+                    <option value="cuisine">Cuisine</option>
+                    <option value="autre">Autre</option>
+                </select>
+                <input type="text" id="custom-category" placeholder="Précisez la catégorie" class="hidden">
+                <input type="text" id="location" placeholder="Lieu (quartier, ville)" required>
+                <input type="datetime-local" id="service-date" required>
+                <input type="tel" id="phone" placeholder="Numéro de téléphone" required>
+                <select id="budget" required>
+                    <option value="">Budget (FCFA)</option>
+                    <option value="1000-2500">1 000 - 2 500 FCFA</option>
+                    <option value="2500-5000">2 500 - 5 000 FCFA</option>
+                    <option value="5000-10000">5 000 - 10 000 FCFA</option>
+                    <option value="10000-20000">10 000 - 20 000 FCFA</option>
+                    <option value="20000-50000">20 000 - 50 000 FCFA</option>
+                    <option value="50000+">50 000 FCFA et plus</option>
+                </select>
+                <button type="submit">Publier l'offre</button>
+                <p id="service-success" class="hidden success-msg">Offre publiée avec succès !</p>
+            </form>
+        </section>
+
+        <section id="list" class="section">
+            <h2>Offres de services disponibles</h2>
+            <div style="margin-bottom: 2rem; text-align: center;">
+                <select id="filter-category" onchange="filterServices()">
+                    <option value="">Toutes les catégories</option>
+                    <option value="menage">Ménage</option>
+                    <option value="jardinage">Jardinage</option>
+                    <option value="bricolage">Bricolage</option>
+                    <option value="informatique">Informatique</option>
+                    <option value="cours">Cours particuliers</option>
+                    <option value="transport">Transport</option>
+                    <option value="cuisine">Cuisine</option>
+                </select>
+            </div>
+            <div id="services-list"></div>
+        </section>
+
+        <section id="community" class="section">
+            <h2>Forums de discussion</h2>
+            <div id="forums-list" class="forum-container">
+                <!-- Forums will be loaded here -->
+            </div>
+        </section>
+
+        <section id="forum-detail" class="section">
+            <button class="back-btn" onclick="showSection('community')">← Retour aux forums</button>
+            <h2 id="forum-detail-title"></h2>
+            <div id="discussion-area" class="discussion-area">
+                <!-- Messages will be loaded here -->
+            </div>
+            <form id="message-form">
+                <textarea id="message-content" placeholder="Écrivez votre message..." required></textarea>
+                <button type="submit">Envoyer</button>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        // Variables globales
+        let currentUser = null;
+        let services = [];
+        let users = [];
+        let forums = [];
+        let currentForum = null;
+
+        // Initialisation des forums
+        function initializeForums() {
+            forums = [
+                {
+                    id: 1,
+                    title: 'Entrepreneuriat',
+                    description: 'Échanges sur la création d\'entreprise, les opportunités business',
+                    messages: []
+                },
+                {
+                    id: 2,
+                    title: 'Éducation sexuelle et formation',
+                    description: 'Discussions sur l\'éducation, la formation professionnelle',
+                    messages: []
+                },
+                {
+                    id: 3,
+                    title: 'Agro-industrie',
+                    description: 'Agriculture, élevage, transformation agroalimentaire',
+                    messages: []
+                },
+                {
+                    id: 4,
+                    title: 'Santé et Bien-être',
+                    description: 'Sport, nutrition, bien-être physique et mental',
+                    messages: []
+                },
+                {
+                    id: 5,
+                    title: 'Numérique et Technologie',
+                    description: 'IT, développement, innovations technologiques',
+                    messages: []
+                },
+                {
+                    id: 6,
+                    title: 'Environnement',
+                    description: 'Écologie, développement durable, protection environnementale',
+                    messages: []
+                },
+                {
+                    id: 7,
+                    title: 'Commerce et E-commerce',
+                    description: 'Vente en ligne, stratégies commerciales, marketing',
+                    messages: []
+                },
+                {
+                    id: 8,
+                    title: 'Culture',
+                    description: 'Arts, musique, traditions, événements culturels',
+                    messages: []
+                }
+            ];
+        }
+
+        // Contrôle d'accès
+        function checkAuthAndShow(sectionId) {
+            if (!currentUser && ['create', 'list', 'community'].includes(sectionId)) {
+                showLoginAlert();
+                return;
+            }
+            showSection(sectionId);
+        }
+
+        function showLoginAlert() {
+            alert('Veuillez vous connecter pour accéder à cette fonctionnalité');
+            showSection('login');
+        }
+
+        // Mise à jour de l'interface utilisateur selon le statut de connexion
+        function updateNavigation() {
+            const protectedNavs = ['create-nav', 'list-nav', 'community-nav'];
+            protectedNavs.forEach(navId => {
+                const nav = document.getElementById(navId);
+                if (currentUser) {
+                    nav.classList.remove('disabled');
+                    nav.onclick = () => showSection(navId.replace('-nav', ''));
+                } else {
+                    nav.classList.add('disabled');
+                    nav.onclick = showLoginAlert;
+                }
+            });
+        }
+
+        // Fonctions d'affichage des sections
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            if (sectionId === 'community') {
+                displayForums();
+            } else if (sectionId === 'list') {
+                displayServices();
+            }
+            
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        // Gestion des catégories personnalisées
+        function handleCategoryChange() {
+            const category = document.getElementById('category').value;
+            const customCategory = document.getElementById('custom-category');
+            
+            if (category === 'autre') {
+                customCategory.classList.remove('hidden');
+                customCategory.required = true;
+            } else {
+                customCategory.classList.add('hidden');
+                customCategory.required = false;
+                customCategory.value = '';
+            }
+        }
+
+        // Gestion de l'inscription
+        document.getElementById('register-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('reg-username').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            const city = document.getElementById('reg-city').value;
+            
+            // Vérifier si l'utilisateur existe déjà
+            const existingUser = users.find(u => u.username === username || u.email === email);
+            if (existingUser) {
+                alert('Un utilisateur avec ce nom ou cet email existe déjà');
+                return;
+            }
+            
+            const newUser = {
+                id: Date.now(),
+                username,
+                email,
+                password,
+                city
+            };
+            
+            users.push(newUser);
+            
+            document.getElementById('register-success').classList.remove('hidden');
+            document.getElementById('register-form').reset();
+            
+            setTimeout(() => {
+                showSection('login');
+            }, 1500);
+        });
+
+        // Gestion de la connexion
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const userInput = document.getElementById('login-user').value;
+            const password = document.getElementById('login-pass').value;
+            
+            const user = users.find(u => 
+                (u.username === userInput || u.email === userInput) && u.password === password
+            );
+            
+            if (user) {
+                currentUser = user;
+                document.getElementById('login-success').classList.remove('hidden');
+                document.getElementById('login-error').classList.add('hidden');
+                updateUserStatus();
+                updateNavigation();
+                document.getElementById('login-form').reset();
+                
+                setTimeout(() => {
+                    showSection('home');
+                }, 1500);
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+                document.getElementById('login-success').classList.add('hidden');
+            }
+        });
+
+        // Mise à jour du statut utilisateur
+        function updateUserStatus() {
+            const statusDiv = document.getElementById('user-status');
+            const welcomeDiv = document.getElementById('user-welcome');
+            
+            if (currentUser) {
+                welcomeDiv.innerHTML = `
+                    <strong>Bonjour ${currentUser.username} !</strong><br>
+                    <small>${currentUser.city}</small><br>
+                    <button onclick="logout()" style="margin-top: 0.5rem; padding: 0.5rem; font-size: 0.8rem;">Déconnexion</button>
+                `;
+                statusDiv.classList.remove('hidden');
+            } else {
+                statusDiv.classList.add('hidden');
+            }
+        }
+
+        // Déconnexion
+        function logout() {
+            currentUser = null;
+            updateUserStatus();
+            updateNavigation();
+            showSection('home');
+        }
+
+        // Gestion de la création de services
+        document.getElementById('service-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                showLoginAlert();
+                return;
+            }
+            
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            let category = document.getElementById('category').value;
+            const customCategory = document.getElementById('custom-category').value;
+            const location = document.getElementById('location').value;
+            const serviceDate = document.getElementById('service-date').value;
+            const phone = document.getElementById('phone').value;
+            const budget = document.getElementById('budget').value;
+            
+            // Si catégorie "autre", utiliser la catégorie personnalisée
+            if (category === 'autre' && customCategory) {
+                category = customCategory;
+            }
+            
+            // Vérifier que la date est dans le futur
+            const selectedDate = new Date(serviceDate);
+            const now = new Date();
+            if (selectedDate <= now) {
+                alert('Veuillez sélectionner une date future pour le service');
+                return;
+            }
+            
+            const newService = {
+                id: Date.now(),
+                title,
+                description,
+                category,
+                location,
+                serviceDate,
+                phone,
+                budget,
+                author: currentUser.username,
+                authorId: currentUser.id,
+                createdDate: new Date().toISOString()
+            };
+            
+            services.push(newService);
+            
+            document.getElementById('service-success').classList.remove('hidden');
+            document.getElementById('service-form').reset();
+            document.getElementById('custom-category').classList.add('hidden');
+            
+            setTimeout(() => {
+                showSection('list');
+            }, 1500);
+        });
+
+        // Vérifier si un service est expiré
+        function isServiceExpired(serviceDate) {
+            const now = new Date();
+            const serviceDateTime = new Date(serviceDate);
+            return serviceDateTime <= now;
+        }
+
+        // Affichage des services
+        function displayServices() {
+            const servicesList = document.getElementById('services-list');
+            const filterCategory = document.getElementById('filter-category').value;
+            
+            // Filtrer les services non expirés
+            let activeServices = services.filter(service => !isServiceExpired(service.serviceDate));
+            
+            if (filterCategory) {
+                activeServices = activeServices.filter(service => service.category === filterCategory);
+            }
+            
+            if (activeServices.length === 0) {
+                servicesList.innerHTML = '<p style="text-align: center; color: #666;">Aucune offre de service disponible pour le moment.</p>';
+                return;
+            }
+            
+            servicesList.innerHTML = activeServices.map(service => {
+                const serviceDate = new Date(service.serviceDate);
+                const formattedDate = serviceDate.toLocaleDateString('fr-FR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                return `
+                    <div class="service-item">
+                        <div class="service-title">${service.title}</div>
+                        <div style="margin: 0.5rem 0; color: #888; font-size: 0.9rem;">
+                            💼 Offre • ${service.category}
+                        </div>
+                        <p style="margin: 1rem 0;">${service.description}</p>
+                        <div class="service-meta">
+                            <span>📍 ${service.location}</span>
+                            <span class="budget">${service.budget}</span>
+                        </div>
+                        <div class="service-meta">
+                            <span>📅 ${formattedDate}</span>
+                            <span>📞 ${service.phone}</span>
+                        </div>
+                        <div class="service-meta">
+                            <span>👤 ${service.author}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Filtrage des services
+        function filterServices() {
+            displayServices();
+        }
+
+        // Affichage des forums
+        function displayForums() {
+            const forumsList = document.getElementById('forums-list');
+            
+            forumsList.innerHTML = forums.map(forum => `
+                <div class="forum-card" onclick="openForum(${forum.id})">
+                    <div class="forum-title">${forum.title}</div>
+                    <p style="color: #666; margin: 0.5rem 0;">${forum.description}</p>
+                    <div class="forum-stats">
+                        💬 ${forum.messages.length} messages
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Ouvrir un forum spécifique
+        function openForum(forumId) {
+            currentForum = forums.find(f => f.id === forumId);
+            if (!currentForum) return;
+            
+            document.getElementById('forum-detail-title').textContent = currentForum.title;
+            displayMessages();
+            showSection('forum-detail');
+        }
+
+        // Affichage des messages d'un forum
+        function displayMessages() {
+            const discussionArea = document.getElementById('discussion-area');
+            
+            if (currentForum.messages.length === 0) {
+                discussionArea.innerHTML = '<p style="text-align: center; color: #666;">Aucun message pour le moment. Soyez le premier à participer !</p>';
+                return;
+            }
+            
+            discussionArea.innerHTML = currentForum.messages.map(message => {
+                const messageDate = new Date(message.date);
+                const formattedDate = messageDate.toLocaleDateString('fr-FR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                return `
+                    <div class="message">
+                        <div class="message-author">${message.author}</div>
+                        <div class="message-date">${formattedDate}</div>
+                        <div style="clear: both; margin-top: 0.5rem
